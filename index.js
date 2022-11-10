@@ -36,6 +36,24 @@ async function run() {
             const service = await serviceCollection.findOne(query);
             res.send(service);
         });
+        //reviews
+        app.get('/reviews', async (req, res) => {
+            // const decoded = req.decoded;
+
+            // if (decoded.email !== req.query.email) {
+            //     res.status(403).send({ message: 'unauthorized access' })
+            // }
+
+            let query = {};
+            if (req.query.email) {
+                query = {
+                    email: req.query.email
+                }
+            }
+            const cursor = reviews.find(query);
+            const review = await cursor.toArray();
+            res.send(review);
+        });
         app.post('/reviews', async (req, res) => {
             const review = req.body;
             const result = await reviews.insertOne(review);
