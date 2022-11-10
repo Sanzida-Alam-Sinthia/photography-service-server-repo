@@ -1,7 +1,9 @@
 const express = require('express');
+const jwt = require('jsonwebtoken');
 const cors = require('cors');
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 require('dotenv').config();
+
 
 const app = express();
 const port = process.env.PORT || 5000;
@@ -18,6 +20,11 @@ async function run() {
     try {
         const serviceCollection = client.db('photographyService').collection('serviceCollection');
         const reviews = client.db('photographyService').collection('reviews');
+        app.post('/jwt', (req, res) => {
+            const user = req.body;
+            const token = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '2d' })
+            res.send({ token })
+        })
         app.get('/services', async (req, res) => {
             const query = {}
             const cursor = serviceCollection.find(query).limit(3);
@@ -53,6 +60,26 @@ async function run() {
             if (req.query.email) {
                 query = {
                     email: req.query.email
+                }
+            }
+            const cursor = reviews.find(query);
+            const review = await cursor.toArray();
+            res.send(review);
+        });
+        app.get('/reviews/:service', async (req, res) => {
+            // const decoded = req.decoded;
+
+            // if (decoded.email !== req.query.email) {
+            //     res.status(403).send({ message: 'unauthorized access' })
+            // }
+            const id = req.params.id;
+            const query = { _id: ObjectId(id) };
+            console.log(query);
+            // let query = {};
+            if (req.query.service) {
+                console.log(req.query.service)
+                query = {
+                    service: req.query.service
                 }
             }
             const cursor = reviews.find(query);
