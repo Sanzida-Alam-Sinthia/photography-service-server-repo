@@ -80,9 +80,8 @@ async function run() {
         app.get('/reviews/:service', async (req, res) => {
 
             const id = req.params.id;
-            const query = { _id: ObjectId(id) };
-            console.log(query);
-            // let query = {};
+
+            let query = {};
             if (req.query.service) {
                 console.log(req.query.service)
                 query = {
